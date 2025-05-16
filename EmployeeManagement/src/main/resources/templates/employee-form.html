@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+</head>
+<body>
+<form th:action="@{/employee/save}" method="post" th:object="${employee}">
+    <input type="text" th:field="*{name}" placeholder="Employee Name">
+    <input type="number" th:field="*{age}" placeholder="Age">
+
+    <select th:field="*{department}">
+        <option th:each="dept : ${departments}" th:value="${dept.id}" th:text="${dept.deptname}"></option>
+    </select>
+
+    <button type="submit">Save</button>
+</form>
+
+</body>
+</html>

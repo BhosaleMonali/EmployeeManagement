@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Create Department</title>
+</head>
+<body>
+    <h2>Create Department</h2>
+
+    <form id="departmentForm">
+        <label>Department Name:</label>
+        <input type="text" id="deptname" name="deptname" placeholder="Department Name" required>
+
+        <label>Location:</label>
+        <select id="location" name="location">
+            <option value="New York">New York</option>
+            <option value="California">California</option>
+            <option value="Texas">Texas</option>
+        </select>
+
+        <button type="submit">Save</button>
+    </form>
+
+</body>
+
+<script>
+document.getElementById("departmentForm").addEventListener("submit", function(event) {
+    event.preventDefault(); // Prevent default form submission
+
+    let jwtToken = sessionStorage.getItem("jwtToken"); // Get JWT token from sessionStorage
+     /* console.log("✅ JWT Token:", jwtToken); */ 
+
+    if (!jwtToken) {
+        alert("Unauthorized! No token found.");
+        return;
+    }
+
+    // Get form data
+    let formData = {
+        deptname: document.getElementById("deptname").value,
+        location: document.getElementById("location").value
+    };
+
+    console.log("📌 Sending data:", formData);
+
+    // Convert formData to JSON string
+    let jsonData = JSON.stringify(formData);
+
+    // Create XMLHttpRequest
+    var xhr = new XMLHttpRequest();
+    xhr.open("POST", "/department/save", true);
+    xhr.setRequestHeader("Content-Type", "application/json"); // JSON format
+    xhr.setRequestHeader("Authorization", "Bearer " + jwtToken); // ✅ Attach JWT token
+   
+    // Handle response
+    xhr.onreadystatechange = function () {
+        if (xhr.readyState == 4) { // Request is complete
+            if (xhr.status == 200) { // Success
+                alert("✅ Department saved successfully!");
+                console.log("📌 Server Response:", xhr.responseText);
+               // redirectToDepartments(jwtToken);
+                //window.location.href = "/departments"; // Redirect to dashboard (change if needed)
+            } else { // Error
+                console.error("❌ Error saving department:", xhr.responseText);
+                alert("❌ Error saving department: " + xhr.responseText);
+            }
+        }
+    };
+
+    // Send the request with data
+    xhr.send(jsonData);
+});
+
+function redirectToDepartments(token) {
+   // Get token from localStorage
+
+    if (!token) {
+        alert("Unauthorized! No token found.");
+        window.location.href = "/login"; // Redirect to login page
+        return;
+    }
+
+    let xhr = new XMLHttpRequest();
+    xhr.open("GET", "/departments", true);
+    xhr.setRequestHeader("Authorization", "Bearer " + token);
+
+    xhr.onreadystatechange = function () {
+        if (xhr.readyState === 4) {
+            if (xhr.status === 200) {
+                // ✅ Successful response, redirect manually
+                document.write(xhr.responseText); // Render the view returned by the server
+            } else {
+                alert("Unauthorized or Error Occurred!");
+            }
+        }
+    };
+
+    xhr.send();
+}
+
+</script>
+
+</html>
