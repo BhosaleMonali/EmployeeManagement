@@ -7,6 +7,7 @@ import com.example.model.Employee;
 import com.example.repo.EmployeeRepository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class EmployeeService {
@@ -20,4 +21,11 @@ public class EmployeeService {
     public void saveEmployee(Employee employee) {
         employeeRepository.save(employee);
     }
+
+	
+	
+	    public Employee getEmployeeById(Long id) {
+	        Optional<Employee> optional = employeeRepository.findById(id);
+	        return optional.orElse(null); // or throw an exception if you prefer
+	    }
 }

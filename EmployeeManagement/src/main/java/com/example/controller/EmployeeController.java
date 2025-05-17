@@ -15,6 +15,8 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
+
 import java.util.List;
 
 @Controller
@@ -25,6 +27,8 @@ public class EmployeeController {
     @Autowired
     private DepartmentService departmentService;
 
+    
+    //to fetch the form or page of employess
     @GetMapping("/employees")
     public String showEmployees(Model model) {
         model.addAttribute("employees", employeeService.getAllEmployees());
@@ -38,10 +42,26 @@ public class EmployeeController {
         return "employee-form";
     }
 
+    //to save the  new employee data in db
     @PostMapping("/employee/save")
     public String saveEmployee(@ModelAttribute Employee employee) {
         employeeService.saveEmployee(employee);
         return "redirect:/employees";
     }
+    
+    // Show form to edit existing employee
+    @GetMapping("/employee/edit/{id}")
+    public String showEditEmployeeForm(@PathVariable("id") Long id, Model model) {
+        Employee existingEmployee = employeeService.getEmployeeById(id);
+        if (existingEmployee != null) {
+            model.addAttribute("employee", existingEmployee);
+            model.addAttribute("departments", departmentService.getAllDepartments());
+            return "employee-form"; // reuse the same form
+        } else {
+            return "redirect:/employees"; // fallback if ID is invalid
+        }
+    }
+    
+    
 }
 
